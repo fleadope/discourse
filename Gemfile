@@ -1,5 +1,7 @@
 source 'https://rubygems.org'
-ruby "2.0.0" # for Heroku
+ruby "2.0.0" 
+
+gem 'unicorn'
 
 gem 'active_model_serializers', git: 'https://github.com/rails-api/active_model_serializers.git'
 
