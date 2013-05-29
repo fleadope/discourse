@@ -5,6 +5,9 @@
 # Pour toute question contactez
 # <Maxime QUANDALLE> "maxime@quandalle.com"
 #
+# To validate this YAML file after you change it, please paste it into
+# http://yamllint.com/
+
 
 fr:
   js:
@@ -338,6 +341,14 @@ fr:
       min_length:
         need_more_for_title: "{{n}} caractères restant pour le titre"
         need_more_for_reply: "{{n}} caractères restant pour le message"
+
+      error:
+        title_missing: "Le titre est obligatoire."
+        title_too_short: "Le titre doit avoir au moins {{min}} caractères."
+        title_too_long: "Le titre ne doit pas dépasser les {{max}} caractères."
+        post_missing: "Le message ne peut être vide."
+        post_length: "Le mesasge doit avoir au moins {{min}} caractères."
+        category_missing: "Vous devez choisir une catégorie."
 
       save_edit: "Sauvegarder la modification"
       reply_original: "Répondre à la discussion initiale"
@@ -778,6 +789,8 @@ fr:
       edit_long: "Editer la catégorie"
       edit_uncategorized: "Editer les non catégoriser"
       view: 'Voir les discussions dans cette catégorie'
+      general: 'Général'
+      settings: 'Paramètres'
       delete: 'Supprimer la catégorie'
       create: 'Créer la catégorie'
       save: 'Enregistrer la catégorie'
@@ -803,7 +816,7 @@ fr:
       add_group: "Ajouter un groupe"
       security: "Sécurité"
       allowed_groups: "Groupes permis :"
-      
+      auto_close_label: "Fermer automatiquement après :"
 
     flagging:
       title: 'Pourquoi voulez-vous signaler ce message ?'
