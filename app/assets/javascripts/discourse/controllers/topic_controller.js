@@ -86,7 +86,7 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
   },
 
   selectAll: function() {
-   var posts = this.get('posts');
+    var posts = this.get('posts');
     var selectedPosts = this.get('selectedPosts');
     if (posts) {
       selectedPosts.addObjects(posts);
@@ -105,29 +105,6 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
 
   toggleSummary: function() {
     this.toggleProperty('summaryCollapsed');
-  },
-
-  splitTopic: function() {
-    var modalController = this.get('controllers.modal');
-    if (!modalController) return;
-
-    modalController.show(Discourse.SplitTopicView.create({
-      topicController: this,
-      topic: this.get('content'),
-      selectedPosts: this.get('selectedPosts')
-    }));
-  },
-
-  mergeTopic: function() {
-    var modalController = this.get('controllers.modal');
-    if (!modalController) return;
-
-    modalController.show(Discourse.MergeTopicView.create({
-      topicController: this,
-      topic: this.get('content'),
-      allPostsSelected: this.get('allPostsSelected'),
-      selectedPosts: this.get('selectedPosts')
-    }));
   },
 
   deleteSelected: function() {
@@ -316,18 +293,6 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
     this.get('content').convertArchetype('regular');
   },
 
-  startTracking: function() {
-    var screenTrack = Discourse.ScreenTrack.create({ topic_id: this.get('content.id') });
-    screenTrack.start();
-    this.set('content.screenTrack', screenTrack);
-  },
-
-  stopTracking: function() {
-    var screenTrack = this.get('content.screenTrack');
-    if (screenTrack) screenTrack.stop();
-    this.set('content.screenTrack', null);
-  },
-
   // Toggle the star on the topic
   toggleStar: function(e) {
     this.get('content').toggleStar();
@@ -344,14 +309,15 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
 
   // Receive notifications for this topic
   subscribe: function() {
+
+    // Unsubscribe before subscribing again
+    this.unsubscribe();
+
     var bus = Discourse.MessageBus;
 
-    // there is a condition where the view never calls unsubscribe, navigate to a topic from a topic
-    bus.unsubscribe('/topic/*');
-
     var topicController = this;
-    bus.subscribe("/topic/" + (this.get('content.id')), function(data) {
-      var topic = topicController.get('content');
+    bus.subscribe("/topic/" + (this.get('id')), function(data) {
+      var topic = topicController.get('model');
       if (data.notification_level_change) {
         topic.set('notification_level', data.notification_level_change);
         topic.set('notifications_reason_id', data.notifications_reason_id);
@@ -370,14 +336,15 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
       topic.set('highest_post_number', data.post_number);
       topic.set('last_poster', data.user);
       topic.set('last_posted_at', data.created_at);
-      Discourse.notifyTitle();
     });
   },
 
   unsubscribe: function() {
     var topicId = this.get('content.id');
     if (!topicId) return;
-    Discourse.MessageBus.unsubscribe("/topic/" + topicId);
+
+    // there is a condition where the view never calls unsubscribe, navigate to a topic from a topic
+    Discourse.MessageBus.unsubscribe('/topic/*');
   },
 
   // Post related methods
@@ -430,47 +397,6 @@ Discourse.TopicController = Discourse.ObjectController.extend(Discourse.Selected
   // Who acted on a particular post / action type
   whoActed: function(actionType) {
     actionType.loadUsers();
-  },
-
-  showPrivateInviteModal: function() {
-    var modal = Discourse.InvitePrivateModalView.create({
-      topic: this.get('content')
-    });
-
-    var modalController = this.get('controllers.modal');
-    if (modalController) {
-      modalController.show(modal);
-    }
-  },
-
-  showInviteModal: function() {
-    var modalController = this.get('controllers.modal');
-    if (modalController) {
-      modalController.show(Discourse.InviteModalView.create({
-        topic: this.get('content')
-      }));
-    }
-  },
-
-  // Clicked the flag button
-  showFlags: function(post) {
-    var modalController = this.get('controllers.modal');
-    if (modalController) {
-      modalController.show(Discourse.FlagView.create({
-        post: post,
-        controller: this
-      }));
-    }
-  },
-
-  showHistory: function(post) {
-    var modalController = this.get('controllers.modal');
-
-    if (modalController) {
-      modalController.show(Discourse.HistoryView.create({
-        originalPost: post
-      }));
-    }
   },
 
   recoverPost: function(post) {
